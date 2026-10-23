@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battery Reusability Index | Second-Life Evaluation</title>
+<style>
+:root{--ink:#18232f;--muted:#667482;--line:#dce4e9;--bg:#f4f7f8;--panel:#fff;--green:#16794b;--green-bg:#e9f7ef;--amber:#986400;--amber-bg:#fff5d9;--red:#b4232e;--red-bg:#fff0f0;--blue:#245b86;--blue-bg:#edf6fc;--shadow:0 8px 28px rgba(25,45,60,.06)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+header{background:#132a3a;color:#fff;padding:28px max(22px,calc((100% - 1180px)/2));border-bottom:4px solid #4fa47b}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:800;color:#a8d8bf}h1{font-size:clamp(1.6rem,3vw,2.35rem);margin:6px 0 5px;letter-spacing:-.035em}header p{color:#d5e0e7;margin:0;max-width:780px}
+main{max-width:1180px;margin:26px auto;padding:0 20px 40px}.layout{display:grid;grid-template-columns:minmax(300px,.86fr) minmax(0,1.14fr);gap:20px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow);margin-bottom:18px}.card h2{font-size:1.1rem;margin:0 0 4px;letter-spacing:-.02em}.sub{font-size:.88rem;color:var(--muted);margin:0 0 18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{font-size:.84rem;font-weight:700}input{width:100%;border:1px solid #cbd6de;border-radius:9px;padding:11px 12px;font:inherit;color:var(--ink);background:#fff}input:focus{outline:3px solid #cfe6f4;border-color:#4e91b9}.hint{font-size:.75rem;color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button{border:0;border-radius:9px;padding:11px 16px;font:inherit;font-weight:750;cursor:pointer}button.primary{background:#176a48;color:#fff}button.secondary{background:#edf1f4;color:#273744}button:hover{filter:brightness(.97)}.error{display:none;background:var(--red-bg);border:1px solid #f0b7bb;color:var(--red);border-radius:9px;padding:11px;margin-top:14px;font-size:.86rem}
+.summary-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:.75rem;font-weight:800;white-space:nowrap}.pill.neutral{background:#edf1f4;color:#465665}.pill.good{background:var(--green-bg);color:var(--green)}.pill.warn{background:var(--amber-bg);color:var(--amber)}.pill.bad{background:var(--red-bg);color:var(--red)}
+.scoreline{display:flex;align-items:baseline;gap:8px;margin:14px 0 4px}.score{font-size:3.5rem;line-height:1;font-weight:850;letter-spacing:-.06em}.outof{color:var(--muted);font-weight:650}.grade{font-size:1.05rem;font-weight:800;margin:8px 0 4px}.explain{color:var(--muted);font-size:.9rem;margin:0}
+.scale{display:flex;height:13px;border-radius:99px;overflow:hidden;margin:20px 0 7px;background:#e7edf0}.scale span:nth-child(1){width:40%;background:#d99a93}.scale span:nth-child(2){width:30%;background:#e8c36a}.scale span:nth-child(3){width:30%;background:#65b58b}.ticks{display:flex;justify-content:space-between;font-size:.73rem;color:var(--muted)}.marker-wrap{height:14px;position:relative;margin-top:2px}.marker{position:absolute;top:-17px;width:3px;height:20px;background:#172b39;border-radius:3px;transform:translateX(-50%);transition:left .2s}
+.section-title{font-size:.92rem;font-weight:850;margin:18px 0 10px}.checks{display:grid;grid-template-columns:1fr 1fr;gap:10px}.check{padding:12px;border-radius:11px;border:1px solid var(--line);background:#fafcfd}.check strong{display:block;font-size:.83rem}.check .status{font-size:.8rem;font-weight:800;margin-top:5px}.check small{display:block;color:var(--muted);font-size:.75rem;margin-top:3px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.82rem}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #e6ecef;white-space:nowrap}th{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;background:#f8fafb}td.num{text-align:right;font-variant-numeric:tabular-nums}tfoot td{font-weight:850;background:#f8fafb}
+.app-box{border:1px solid var(--line);border-radius:12px;padding:15px;margin-top:12px}.app-box h3{font-size:.98rem;margin:0 0 6px}.app-box p{font-size:.86rem;color:#4f5e6b;margin:0 0 8px}.app-box ul{margin:7px 0 0;padding-left:19px;font-size:.85rem}.app-box li{margin:4px 0}.app-box.green{border-left:4px solid #4a9e72}.app-box.amber{border-left:4px solid #d3a53e}.app-box.red{border-left:4px solid #c45b5b}
+.note{font-size:.8rem;color:var(--muted);background:#f7fafb;border-radius:9px;padding:12px;margin-top:14px}.note strong{color:var(--ink)}details{border-top:1px solid var(--line);margin-top:17px;padding-top:14px}summary{cursor:pointer;font-weight:800;font-size:.9rem}details p,details li{font-size:.83rem;color:#53616d}code{background:#eef2f4;padding:2px 5px;border-radius:4px;font-size:.8rem}.footer{color:var(--muted);font-size:.78rem;text-align:center;padding:5px 0 20px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr 1fr}}@media(max-width:480px){main{padding:0 12px 30px}.card{padding:17px}.form-grid,.checks{grid-template-columns:1fr}.score{font-size:3rem}header{padding:24px 18px}}
+
+/* Refined dashboard styling */
+:root{--ink:#142536;--muted:#637487;--line:#dce6ee;--bg:#f1f6fa;--panel:#fff;--green:#11734a;--green-bg:#e8f7ef;--amber:#916000;--amber-bg:#fff4d6;--red:#b42332;--red-bg:#fff0f1;--blue:#176b9b;--blue-bg:#eaf5fc;--shadow:0 14px 40px rgba(21,49,71,.075)}
+body{background:radial-gradient(ellipse at 10% 0%,#e5f3fb 0,transparent 38%),var(--bg)}
+header{position:relative;overflow:hidden;background:linear-gradient(120deg,#102738 0%,#17445a 62%,#17664f 100%);padding-top:34px;padding-bottom:36px;border-bottom:0}
+header:after{content:"";position:absolute;width:330px;height:330px;border:1px solid rgba(255,255,255,.13);border-radius:50%;right:5%;top:-185px;box-shadow:0 0 0 34px rgba(255,255,255,.035),0 0 0 72px rgba(255,255,255,.025)}
+.eyebrow{color:#a8e8c8;display:flex;align-items:center;gap:9px}.eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:#64d9a0;box-shadow:0 0 0 5px rgba(100,217,160,.14)}
+h1{font-size:clamp(1.8rem,3.5vw,2.65rem);letter-spacing:-.045em}header p{font-size:1rem;line-height:1.7;max-width:760px}
+main{margin-top:24px}.card{border-radius:19px;padding:24px;border-color:#e0e8ef;box-shadow:var(--shadow);transition:box-shadow .2s}.card:hover{box-shadow:0 17px 44px rgba(21,49,71,.095)}
+.card h2{font-size:1.12rem}.sub{line-height:1.6}
+input{border-color:#d2dee7;border-radius:11px;padding:12px 13px;transition:border-color .18s,box-shadow .18s}input:focus{outline:none;border-color:#3387b4;box-shadow:0 0 0 4px rgba(51,135,180,.13)}
+button{border-radius:11px;transition:transform .15s,box-shadow .15s,filter .15s}button:active{transform:translateY(1px)}button.primary{background:linear-gradient(135deg,#14764f,#0e5d46);box-shadow:0 6px 16px rgba(17,115,74,.2)}button.primary:hover{box-shadow:0 8px 20px rgba(17,115,74,.26);filter:brightness(1.04)}button.secondary{border:1px solid #e0e7ed;background:#f6f9fb}
+.summary-top{align-items:center}.scoreline{margin:20px 0 8px;gap:10px}.score{font-size:clamp(3.5rem,7vw,4.7rem);background:linear-gradient(135deg,#14384d,#21845c);background-clip:text;-webkit-background-clip:text;color:transparent}.outof{font-size:.88rem}.grade{font-size:1.15rem;margin:8px 0}
+.scale{height:15px;margin-top:24px}.marker{width:4px;height:24px;top:-21px;box-shadow:0 2px 7px #172b3944}.check{background:linear-gradient(145deg,#fbfdfe,#f7fafc);border-radius:13px;padding:14px;border-color:#e2eaf0}.check .status{font-size:.82rem;letter-spacing:.04em}
+.app-box{background:#fbfdfe;border-radius:14px;padding:17px}.note{border:1px solid #e5edf2;background:#f7fafc;line-height:1.6}
+table{font-size:.84rem}th{background:#f3f7fa}th,td{padding:11px 9px}details{border-top-color:#e5edf2}summary{padding:3px 0}.footer{padding:12px 0 28px}
+@media(max-width:850px){header:after{right:-180px}.card{padding:21px}}@media(max-width:480px){header{padding:25px 16px}main{margin-top:15px}.card{padding:16px;border-radius:15px}.score{font-size:3.3rem}.actions button{flex:1}}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">AI-Assisted Second-Life Battery Evaluation System</div>
+  <h1>Battery Reusability Index (BRI)</h1>
+  <p>Evaluate a battery using the configured BRI equation, apply the safety gate, and view its reuse category and proposed application pathway.</p>
+</header>
+<main>
+<div class="layout">
+  <section>
+    <div class="card">
+      <h2>Battery parameters</h2>
+      <p class="sub">Enter measured or model-estimated SOH, RUL, and internal resistance. This tool calculates BRI; it does not predict the inputs.</p>
+      <form id="briForm">
+        <div class="form-grid">
+          <div class="field full"><label for="batteryId">Battery identifier (optional)</label><input id="batteryId" type="text" placeholder="e.g. CELL-001"></div>
+          <div class="field"><label for="soh">State of Health (SOH, %)</label><input id="soh" type="number" min="0" max="100" step="any" value="92" required><span class="hint">Valid input: 0–100%</span></div>
+          <div class="field"><label for="rul">Remaining Useful Life (cycles)</label><input id="rul" type="number" min="0" max="299" step="any" value="220" required><span class="hint">Reference RUL₀ = 299 cycles</span></div>
+          <div class="field"><label for="ri">Internal resistance (Ri, Ω)</label><input id="ri" type="number" min="0" step="any" value="0.095" required><span class="hint">Safety gate: reject if Ri &gt; 0.150 Ω</span></div>
+        </div>
+        <div class="actions"><button class="primary" type="submit">Calculate BRI</button><button class="secondary" type="button" id="sampleBtn">Load sample values</button><button class="secondary" type="button" id="resetBtn">Reset</button></div>
+        <div id="error" class="error" role="alert"></div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Project methodology</h2><p class="sub">Three ageing indicators are combined using the current AHP-derived weights and configured decision boundaries.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Indicator</th><th>Normalization</th><th>Weight</th></tr></thead>
+        <tbody>
+          <tr><td>SOH</td><td>(SOH − 80) / 20</td><td class="num">0.500</td></tr>
+          <tr><td>RUL</td><td>RUL / 299</td><td class="num">0.250</td></tr>
+          <tr><td>Ri</td><td>(RiEOL − Ri) / (RiEOL − Ri₀)</td><td class="num">0.250</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><strong>Resistance references:</strong> Ri₀ = 0.0752 Ω (cycle 1); RiEOL = 0.150 Ω is a provisional reference and should ultimately be set using the full dataset.</div>
+    </div>
+  </section>
+  <section>
+    <div class="card" aria-live="polite">
+      <div class="summary-top"><div><h2>Assessment result</h2><p class="sub" id="batteryLabel">Illustrative sample battery</p></div><span id="safetyPill" class="pill neutral">Awaiting calculation</span></div>
+      <div class="scoreline"><span id="score" class="score">—</span><span class="outof">/ 100 BRI</span></div>
+      <div id="grade" class="grade">Enter parameters and calculate</div>
+      <p id="summary" class="explain">The score is calculated from three ageing indicators; the safety gate can override any score.</p>
+      <div class="scale" aria-label="BRI category scale"><span title="Recycle / low grade"></span><span title="Light-duty reuse"></span><span title="High-demand reuse"></span></div>
+      <div class="marker-wrap"><div id="marker" class="marker" style="left:0%"></div></div>
+      <div class="ticks"><span>0</span><span>40 · category boundary</span><span>70 · category boundary</span><span>100</span></div>
+      <div class="section-title">Safety gate</div>
+      <div class="checks">
+        <div class="check"><strong>SOH threshold</strong><div id="sohStatus" class="status">Not evaluated</div><small id="sohDetail">SOH must be at least 80% to pass this check.</small></div>
+        <div class="check"><strong>Internal resistance threshold</strong><div id="riStatus" class="status">Not evaluated</div><small id="riDetail">Ri must be at most 0.150 Ω to pass this check.</small></div>
+      </div>
+      <div class="section-title">Application recommendation</div>
+      <div id="application" class="app-box"><h3>Awaiting result</h3><p>Calculate BRI to see the category and proposed application pathway.</p></div>
+      <div class="note"><strong>Important:</strong> passing these two configured checks does not certify a battery as safe for deployment. Application assignments are proposed engineering recommendations and require application-specific validation.</div>
+    </div>
+    <div class="card">
+      <h2>BRI calculation breakdown</h2><p class="sub">Normalized indicator scores, configured weights, and weighted contributions.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Indicator</th><th>Input</th><th>Normalized score</th><th>Weight</th><th>Contribution to BRI</th></tr></thead>
+        <tbody id="breakdown"><tr><td colspan="5">Calculation details appear here after submission.</td></tr></tbody>
+        <tfoot><tr><td colspan="4">BRI total</td><td id="totalCell" class="num">—</td></tr></tfoot>
+      </table></div>
+      <details><summary>Formula, thresholds & evidence status</summary>
+        <p><strong>BRI equation:</strong> 100 × (0.50·SSOH + 0.25·SRUL + 0.25·SRi).</p>
+        <p><strong>Safety gate:</strong> SOH &lt; 80% OR Ri &gt; 0.150 Ω means BRI = 0 and REJECTED, regardless of the other scores. Equality at SOH = 80% and Ri = 0.150 Ω passes these two specific checks.</p>
+        <ul><li><strong>BRI ≥ 70:</strong> High-demand reuse (e.g. stationary storage).</li><li><strong>40 ≤ BRI &lt; 70:</strong> Light-duty reuse (lower power / cycling duty).</li><li><strong>BRI &lt; 40:</strong> Recycle / low grade, including every rejected cell.</li></ul>
+        <p><strong>Evidence status:</strong> The SOH and Ri safety gate and BRI boundaries are configured decision rules. The 0.150 Ω resistance reference is provisional pending evaluation against the full dataset. Specific application assignments are proposed recommendations, not experimentally validated outcomes.</p>
+      </details>
+    </div>
+  </section>
+</div>
+<div class="footer">Decision-support prototype · Not a battery certification or complete safety assessment</div>
+</main>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const CONFIG = { weights:{soh:.50,rul:.25,ri:.25}, sohMin:80, rulRef:299, riInitial:.0752, riEol:.150 };
+const fmt = (n,d=3) => Number(n).toFixed(d);
+const showError = msg => { $("error").textContent=msg; $("error").style.display=msg?"block":"none"; };
+function setCheck(statusId, detailId, pass, detail){
+  $(statusId).textContent=pass?"PASS":"FAIL";
+  $(statusId).style.color=pass?"var(--green)":"var(--red)";
+  $(detailId).textContent=detail;
+}
+function classify(bri){
+  if(bri>=70) return {name:"High-demand reuse",key:"green",description:"BRI ≥ 70 — stationary energy storage is a recommended example application."};
+  if(bri>=40) return {name:"Light-duty reuse",key:"amber",description:"40 ≤ BRI < 70 — lower power / cycling duty."};
+  return {name:"Recycle / low grade",key:"red",description:"BRI < 40 — recycling assessment; no routine second-life deployment recommendation."};
+}
+function appMarkup(category, rejected){
+  if(rejected) return `<div class="app-box red"><h3>REJECTED — recycling assessment</h3><p>The mandatory project safety gate failed. Do not recommend reuse, even if the calculated indicators would otherwise produce a high score.</p><ul><li>Refer for qualified assessment and an appropriate end-of-life or safe-handling pathway.</li><li>Do not treat this result as confirmation that transport, storage, or recycling handling is automatically safe.</li></ul></div>`;
+  if(category.name==="High-demand reuse") return `<div class="app-box green"><h3>High-demand reuse candidate</h3><p>${category.description}</p><ul><li>Stationary energy storage</li><li>Grid-connected or commercial/industrial storage, where technically suitable</li><li>Renewable-energy buffering (e.g. solar storage)</li><li>Peak-shaving and load-shifting systems, subject to engineering checks</li></ul><p><strong>Status:</strong> proposed mapping; not automatic approval.</p></div>`;
+  if(category.name==="Light-duty reuse") return `<div class="app-box amber"><h3>Light-duty reuse candidate</h3><p>${category.description}</p><ul><li>Lower-demand stationary energy storage</li><li>Selected backup-power applications</li><li>Low-power energy-buffering systems</li></ul><p><strong>Conditions:</strong> validate power capability, usable capacity, thermal behavior, battery compatibility, and intended duty cycle.</p><p><strong>Status:</strong> proposed mapping; not automatic approval.</p></div>`;
+  return `<div class="app-box red"><h3>Recycle / low grade</h3><p>${category.description}</p><ul><li>Recycling assessment</li><li>Material recovery or an appropriate end-of-life pathway</li></ul><p>Routine second-life deployment is not recommended in this category.</p></div>`;
+}
+function calculate(e){
+  if(e) e.preventDefault();
+  showError("");
+  const vals = {soh:$("soh").value.trim(),rul:$("rul").value.trim(),ri:$("ri").value.trim()};
+  for(const [k,v] of Object.entries(vals)){
+    if(v===""){showError("Please fill in all required battery parameters.");return;}
+    if(!Number.isFinite(Number(v))){showError("All required parameters must be valid finite numbers.");return;}
+  }
+  const {soh,rul,ri}=Object.fromEntries(Object.entries(vals).map(([k,v])=>[k,Number(v)]));
+  if(soh<0||soh>100){showError("SOH must be between 0 and 100%.");return;}
+  if(rul<0||rul>CONFIG.rulRef){showError("RUL must be between 0 and 299 cycles for the configured RUL/RUL₀ normalization range.");return;}
+  if(ri<0){showError("Internal resistance must be a non-negative number.");return;}
+  const sohPass=soh>=CONFIG.sohMin, riPass=ri<=CONFIG.riEol, rejected=!sohPass||!riPass;
+  setCheck("sohStatus","sohDetail",sohPass,`Entered: ${fmt(soh,2)}% · threshold: SOH ≥ 80%.`);
+  setCheck("riStatus","riDetail",riPass,`Entered: ${fmt(ri,4)} Ω · threshold: Ri ≤ 0.150 Ω.`);
+  const scores={
+    soh:(soh-CONFIG.sohMin)/20,
+    rul:rul/CONFIG.rulRef,
+    ri:(CONFIG.riEol-ri)/(CONFIG.riEol-CONFIG.riInitial),
+  };
+  // A value below the cycle-1 resistance reference can mathematically produce SRi > 1.
+  // Keep the configured equation visible and avoid silently clipping a normalized score.
+  if(scores.ri<0||scores.ri>1){
+    showError("The configured Ri normalization produces a score outside 0–1 for this input. Please verify the resistance measurement and reference values (Ri₀ = 0.0752 Ω, RiEOL = 0.150 Ω) before calculating.");
+    $("score").textContent="—"; $("grade").textContent="BRI not calculated"; $("application").innerHTML="<h3>Resistance normalization needs review</h3><p>Verify the measurement and configured reference values. No BRI result is shown for an out-of-range normalized indicator.</p>";
+    $("safetyPill").className="pill neutral"; $("safetyPill").textContent=rejected?"Safety gate failed":"Review required";
+    $("summary").textContent=rejected?"A safety-gate condition failed; no reuse recommendation is permitted.":"The resistance normalization is outside the configured 0–1 score range.";
+    $("breakdown").innerHTML="<tr><td colspan='5'>No BRI result: resistance normalized score is outside 0–1.</td></tr>"; $("totalCell").textContent="—"; return;
+  }
+  const contributions={soh:scores.soh*CONFIG.weights.soh,rul:scores.rul*CONFIG.weights.rul,ri:scores.ri*CONFIG.weights.ri};
+  const rawBri=100*(contributions.soh+contributions.rul+contributions.ri);
+  const bri=rejected?0:rawBri;
+  if(!Number.isFinite(bri)||bri<0||bri>100){showError("The calculated BRI is outside 0–100. Check inputs and the configured reference values.");return;}
+  const category=classify(bri);
+  $("score").textContent=fmt(bri,1);
+  $("grade").textContent=rejected?"REJECTED — safety gate overrides BRI":category.name;
+  $("grade").style.color=rejected?"var(--red)":category.key==="green"?"var(--green)":category.key==="amber"?"var(--amber)":"var(--red)";
+  $("safetyPill").className="pill "+(rejected?"bad":"good");
+  $("safetyPill").textContent=rejected?"Safety gate failed":"Safety gate passed";
+  $("batteryLabel").textContent=$("batteryId").value.trim()||"Battery identifier not provided";
+  $("summary").textContent=rejected?`Rejected because ${[!sohPass?"SOH is below 80%":null,!riPass?"Ri exceeds 0.150 Ω":null].filter(Boolean).join(" and ")}. The safety gate requires rejection regardless of other scores.`:category.description;
+  $("marker").style.left=Math.max(0,Math.min(100,bri))+"%";
+  const applicationEl = $("application");
+  const applicationMarkup = appMarkup(category, rejected);
+  const applicationTemplate = document.createElement("template");
+  applicationTemplate.innerHTML = applicationMarkup.trim();
+  const replacementApplication = applicationTemplate.content.firstElementChild;
+  replacementApplication.id = "application";
+  applicationEl.replaceWith(replacementApplication);
+  const rows=[
+    ["SOH",fmt(soh,2)+"%",scores.soh,CONFIG.weights.soh,contributions.soh],
+    ["RUL",fmt(rul,1)+" cycles",scores.rul,CONFIG.weights.rul,contributions.rul],
+    ["Ri",fmt(ri,4)+" Ω",scores.ri,CONFIG.weights.ri,contributions.ri]
+  ];
+  $("breakdown").innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="num">${fmt(r[2],4)}</td><td class="num">${fmt(r[3],3)}</td><td class="num">${fmt(r[4]*100,2)}</td></tr>`).join("");
+  $("totalCell").textContent=fmt(bri,2);
+  if(rejected){
+    $("breakdown").innerHTML += `<tr><td colspan="4">Safety-gate override</td><td class="num">BRI set to 0</td></tr>`;
+    $("totalCell").textContent="0.00";
+  }
+}
+$("briForm").addEventListener("submit",calculate);
+$("sampleBtn").addEventListener("click",()=>{$("batteryId").value="DEMO-001";$("soh").value=92;$("rul").value=220;$("ri").value=.095;calculate();});
+$("resetBtn").addEventListener("click",()=>{$("briForm").reset();$("batteryId").value="";$("soh").value="";$("rul").value="";$("ri").value="";showError("");$("score").textContent="—";$("grade").textContent="Enter parameters and calculate";$("summary").textContent="The score is calculated from three ageing indicators; the safety gate can override any score.";$("batteryLabel").textContent="Awaiting calculation";$("safetyPill").className="pill neutral";$("safetyPill").textContent="Awaiting calculation";$("sohStatus").textContent="Not evaluated";$("riStatus").textContent="Not evaluated";$("sohDetail").textContent="SOH must be at least 80% to pass this check.";$("riDetail").textContent="Ri must be at most 0.150 Ω to pass this check.";$("application").innerHTML="<h3>Awaiting result</h3><p>Calculate BRI to see the category and proposed application pathway.</p>";$("breakdown").innerHTML="<tr><td colspan='5'>Calculation details appear here after submission.</td></tr>";$("totalCell").textContent="—";$("marker").style.left="0%";});
+// Ready for user input; calculation runs when the form is submitted.
+</script>
+</body>
+</html>
